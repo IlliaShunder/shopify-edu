@@ -7,24 +7,59 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '18'
 
       - name: Install Shopify CLI
         run: npm install -g @shopify/cli
 
-      - name: Upload theme
+      - name: Get Access Token
+        id: get_token
+        run: |
+          TOKEN=$(curl -s -X POST \
+            "https://${{ secrets.SHOPIFY_STORE }}/admin/oauth/access_token" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "client_id": "${{ secrets.SHOPIFY_CLIENT_ID }}",
+              "client_secret": "${{ secrets.SHOPIFY_CLIENT_SECRET }}",
+              "grant_type": "client_credentials"
+            }' | jq -r '.access_token')
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Determine deployment target
+        id: target
+        run: |
+          echo "deploy_flags=--allow-live --live" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies (optional)
+        run: |
+          if [ -f "package.json" ] && grep -q '"build":' package.json; then
+            npm install
+            npm install --save-dev @types/node
+          fi
+
+      - name: Build theme (optional)
+        run: |
+          if [ -f "package.json" ] && grep -q '"build":' package.json; then
+            npm run build
+          fi
+
+      - name: Deploy to Shopify
         run: |
           shopify theme push \
-            --json \
-            --ignore config/settings_data.json templates/*.json sections/*.json \
-            --theme ${{ vars.PRODUCTION_THEME_NAME }} \
             --store ${{ secrets.SHOPIFY_STORE }} \
-            --password ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }} \
-            --allow-live
+            --password ${{ steps.get_token.outputs.token }} \
+            --path . \
+            ${{ steps.target.outputs.deploy_flags }} \
+            --ignore=config/settings_data.json \
+            --ignore=templates/*.json \
+            --ignore=sections/*.json
