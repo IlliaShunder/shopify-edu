@@ -57,6 +57,7 @@ jobs:
         run: |
           shopify theme push \
             --store ${{ secrets.SHOPIFY_STORE }} \
+            --theme ${{ vars.PRODUCTION_THEME_NAME }} \
             --password ${{ steps.get_token.outputs.token }} \
             --path . \
             ${{ steps.target.outputs.deploy_flags }} \
