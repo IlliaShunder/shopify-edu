@@ -7,60 +7,23 @@ on:
 
 jobs:
   deploy:
+    name: Deploy
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 20
 
       - name: Install Shopify CLI
         run: npm install -g @shopify/cli
 
-      - name: Get Access Token
-        id: get_token
-        run: |
-          TOKEN=$(curl -s -X POST \
-            "https://${{ secrets.SHOPIFY_STORE }}/admin/oauth/access_token" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "client_id": "${{ secrets.SHOPIFY_CLIENT_ID }}",
-              "client_secret": "${{ secrets.SHOPIFY_CLIENT_SECRET }}",
-              "grant_type": "client_credentials"
-            }' | jq -r '.access_token')
-          echo "::add-mask::$TOKEN"
-          echo "token=$TOKEN" >> $GITHUB_OUTPUT
-
-      - name: Determine deployment target
-        id: target
-        run: |
-          echo "deploy_flags=--allow-live --live" >> $GITHUB_OUTPUT
-
-      - name: Install dependencies (optional)
-        run: |
-          if [ -f "package.json" ] && grep -q '"build":' package.json; then
-            npm install
-            npm install --save-dev @types/node
-          fi
-
-      - name: Build theme (optional)
-        run: |
-          if [ -f "package.json" ] && grep -q '"build":' package.json; then
-            npm run build
-          fi
-
-      - name: Deploy to Shopify
+      - name: Upload theme
         run: |
           shopify theme push \
-            --store ${{ secrets.SHOPIFY_STORE }} \
+            --json \
+            --ignore config/settings_data.json templates/*.json sections/*.json \
             --theme ${{ vars.PRODUCTION_THEME_NAME }} \
-            --password ${{ steps.get_token.outputs.token }} \
-            --path . \
-            ${{ steps.target.outputs.deploy_flags }} \
-            --ignore=config/settings_data.json \
-            --ignore=templates/*.json \
-            --ignore=sections/*.json
+            --store ${{ secrets.SHOPIFY_STORE }} \
+            --password ${{ secrets.SHOPIFY_CLIENT_SECRET }} \
+            --allow-live
