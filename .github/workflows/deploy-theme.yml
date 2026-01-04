@@ -23,7 +23,7 @@ jobs:
           shopify theme push \
             --json \
             --ignore config/settings_data.json templates/*.json sections/*.json \
-            --theme ${{ vars.PRODUCTION_THEME_NAME }} \
+            --theme ${{ vars.SHOPIFY_FLAG_THEME_ID }} \
             --store ${{ secrets.SHOPIFY_STORE }} \
             --password ${{ secrets.SHOPIFY_CLIENT_SECRET }} \
             --allow-live
