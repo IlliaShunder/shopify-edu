@@ -1,5 +1,12 @@
+{% liquid 
+  assign locale_parts = request.locale.iso_code | split: '-'
+  assign is_arabic = false
+  if locale_parts.first == 'ar'
+    assign is_arabic = true
+  endif
+ %}
 <!doctype html>
-<html class="no-js" lang="{{ request.locale.iso_code }}">
+<html class="no-js{% if is_arabic %} rtl{% endif %}" lang="{{ request.locale.iso_code }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
