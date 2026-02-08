@@ -49,6 +49,13 @@
           "type": "description",
           "settings": {}
         },
+        "text_eAt8Tr": {
+          "type": "text",
+          "settings": {
+            "text": "Material: {{ product.metafields.custom.material.value }}",
+            "text_style": "body"
+          }
+        },
         "share": {
           "type": "share",
           "disabled": true,
@@ -65,6 +72,7 @@
         "price",
         "buy_buttons",
         "description",
+        "text_eAt8Tr",
         "share"
       ],
       "settings": {
