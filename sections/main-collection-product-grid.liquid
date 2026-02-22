@@ -3,6 +3,8 @@
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 
+<script src="{{ 'add-to-cart.js' | asset_url }}" defer="defer"></script>
+
 {%- if section.settings.enable_quick_add -%}
   {{ 'quick-add.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
@@ -158,7 +160,8 @@
                     show_rating: section.settings.show_rating,
                     lazy_load: lazy_load,
                     show_quick_add: section.settings.enable_quick_add,
-                    section_id: section.id
+                    section_id: section.id,
+                    show_add_to_cart_button: true
                   %}
                 </li>
               {%- endfor -%}
