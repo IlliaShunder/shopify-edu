@@ -11,6 +11,7 @@
   - lazy_load: {Boolean} Image should be lazy loaded. Default: true (optional)
   - show_quick_add: {Boolean} Show the quick add button.
   - section_id: {String} The ID of the section that contains this card.
+  - show_add_to_cart_button: {Boolean} Show add to cart button. Default: false (optional)
   - horizontal_class: {Boolean} Add a card--horizontal class if set to true. Default: false (optional)
   - horizontal_quick_add: {Boolean} Changes the quick add button styles when set to true. Default: false (optional)
 
@@ -18,6 +19,7 @@
   {% render 'card-product', show_vendor: section.settings.show_vendor %}
 {% endcomment %}
 
+{{ 'add-to-cart.css' | asset_url | stylesheet_tag }}
 {{ 'component-rating.css' | asset_url | stylesheet_tag }}
 
 {%- if card_product and card_product != empty -%}
@@ -137,21 +139,74 @@
       </div>
       <div class="card__content">
         <div class="card__information">
-          <h3
-            class="card__heading{% if card_product.featured_media or settings.card_style == 'standard' %} h5{% endif %}"
-            {% if card_product.featured_media or settings.card_style == 'card' %}
-              id="title-{{ section_id }}-{{ card_product.id }}"
-            {% endif %}
-          >
-            <a
-              href="{{ card_product.url }}"
-              id="CardLink-{{ section_id }}-{{ card_product.id }}"
-              class="full-unstyled-link"
-              aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }} Badge-{{ section_id }}-{{ card_product.id }}"
+          <div class="card__information-top">
+            <h3
+              class="card__heading{% if card_product.featured_media or settings.card_style == 'standard' %} h5{% endif %}"
+              {% if card_product.featured_media or settings.card_style == 'card' %}
+                id="title-{{ section_id }}-{{ card_product.id }}"
+              {% endif %}
             >
-              {{ card_product.title | escape }}
-            </a>
-          </h3>
+              <a
+                href="{{ card_product.url }}"
+                id="CardLink-{{ section_id }}-{{ card_product.id }}"
+                class="full-unstyled-link"
+                aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }} Badge-{{ section_id }}-{{ card_product.id }}"
+              >
+                {{ card_product.title | escape }}
+              </a>
+            </h3>
+            {%- if show_add_to_cart_button and card_product.variants.size == 1 -%}
+              <div class="add-to-cart-btn">
+                {%- liquid
+                  assign product_form_id = 'add-to-cart-' | append: section_id | append: card_product.id
+                  assign variant_available = card_product.selected_or_first_available_variant.available
+                -%}
+                {%- form 'product',
+                  card_product,
+                  id: product_form_id,
+                  class: 'form',
+                  novalidate: 'novalidate',
+                  data-type: 'add-to-cart-form'
+                -%}
+                  <input
+                    type="hidden"
+                    name="id"
+                    value="{{ card_product.selected_or_first_available_variant.id }}"
+                  >
+                  <button
+                    id="{{ product_form_id }}-submit"
+                    type="submit"
+                    name="add"
+                    aria-label="{{ 'products.product.add_to_cart' | t }}"
+                    aria-live="polite"
+                    title="{{ 'products.product.add_to_cart' | t }}"
+                    {% unless variant_available %}
+                      disabled
+                    {% endunless %}
+                  >
+                    <span>
+                      {%- if variant_available -%}
+                        {{ 'products.product.add_to_cart' | t }}
+                      {%- else -%}
+                        {{ 'products.product.sold_out' | t }}
+                      {%- endif -%}
+                    </span>
+                    <div class="loading-overlay__spinner hidden">
+                      <svg
+                        aria-hidden="true"
+                        focusable="false"
+                        class="spinner"
+                        viewBox="0 0 66 66"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+                      </svg>
+                    </div>
+                  </button>
+                {%- endform -%}
+              </div>
+            {%- endif -%}
+          </div>
           <div class="card-information">
             {%- if show_vendor -%}
               <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>

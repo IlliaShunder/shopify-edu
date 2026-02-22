@@ -1,0 +1,39 @@
+.add-to-cart-btn button {
+    text-wrap: nowrap;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    min-width: fit-content;
+    
+    &:disabled {
+        cursor: not-allowed;
+    }
+    
+    &.loading {
+        min-width: var(--button-width);
+        min-height: var(--button-height);
+    }
+}
+
+.add-to-cart-btn .loading-overlay__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-to-cart-btn .loading-overlay__spinner .spinner {
+    width: 100%;
+    height: 100%;
+}
+
+.card__information-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
