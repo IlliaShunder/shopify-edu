@@ -1,0 +1,41 @@
+{%- if product.variants.size > 1 -%}
+  {%- liquid
+    assign out_of_stock_variants = product.variants | where: 'available', false | size
+  -%}
+  {%- if out_of_stock_variants > 0 -%}
+    {%- for opt in product.options_with_values -%}
+      {%- liquid
+        assign option_index = forloop.index
+        assign option_handle = 'option' | append: option_index
+        assign blocked_values = ''
+      -%}
+
+      {%- for opt_value in opt.values -%}
+        {%- liquid
+          assign related_variants = product.variants | where: option_handle, opt_value
+          assign in_stock = related_variants | where: 'available', true
+        -%}
+
+        {%- unless in_stock.size > 0 -%}
+          {%- if blocked_values != '' -%}
+            {%- assign blocked_values = blocked_values | append: '||' -%}
+          {%- endif -%}
+          {%- assign blocked_values = blocked_values | append: opt_value -%}
+        {%- endunless -%}
+      {%- endfor -%}
+
+      {%- assign blocked_array = blocked_values | split: '||' -%}
+
+      {%- if blocked_array.first != blank -%}
+        <div class="variant-stock-warning">
+          <p>Out of stock {{ opt.name | capitalize }}:</p>
+          <ul>
+            {%- for item in blocked_array -%}
+              <li>{{ item }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endif -%}
