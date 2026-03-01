@@ -90,6 +90,41 @@
         "padding_bottom": 0
       }
     },
+    "faq_qGNbxp": {
+      "type": "faq",
+      "blocks": {
+        "faq_item_fwJXGd": {
+          "type": "faq_item",
+          "settings": {
+            "question": "<p>Test Question 1?</p>",
+            "answer": "<p>Test Answer 1</p>"
+          }
+        },
+        "faq_item_78BNDt": {
+          "type": "faq_item",
+          "settings": {
+            "question": "<p>Test Question 2?</p>",
+            "answer": "<p>Test Answer 2</p>"
+          }
+        },
+        "faq_item_QYdaJz": {
+          "type": "faq_item",
+          "settings": {
+            "question": "<p>Test Question 3?</p>",
+            "answer": "<p>Test Answer 3</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_fwJXGd",
+        "faq_item_78BNDt",
+        "faq_item_QYdaJz"
+      ],
+      "name": "FAQ",
+      "settings": {
+        "heading": "Frequently Asked Questions"
+      }
+    },
     "related-products": {
       "type": "related-products",
       "settings": {
@@ -110,6 +145,7 @@
   },
   "order": [
     "main",
+    "faq_qGNbxp",
     "related-products"
   ]
 }
