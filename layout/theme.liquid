@@ -274,6 +274,9 @@
     </ul>
 
     <script>
+      window.Shopify = window.Shopify || {};
+      window.Shopify.storefrontAccessToken = 'e923f7793afdf969cda4fb12bae9313a';
+      window.Shopify.shop = '{{ shop.permanent_domain }}';
       window.shopUrl = '{{ request.origin }}';
       window.routes = {
         cart_add_url: '{{ routes.cart_add_url }}',

@@ -1,4 +1,7 @@
 {{ 'customer.css' | asset_url | stylesheet_tag }}
+{{ 'registration.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'registration.js' | asset_url }}" defer></script>
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -13,6 +16,8 @@
     }
   }
 {%- endstyle -%}
+
+<div id="form-alerts" aria-live="polite" aria-atomic="true"></div>
 
 <div class="customer register section-{{ section.id }}-padding">
   <svg style="display: none">
@@ -135,7 +140,7 @@
         {{ form.errors.messages.password }}.
       </span>
     {%- endif -%}
-    <button>
+    <button type="submit">
       {{ 'customer.register.submit' | t }}
     </button>
   {%- endform -%}
