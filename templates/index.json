@@ -162,12 +162,66 @@
         "padding_top": 36,
         "padding_bottom": 36
       }
+    },
+    "reusable_hero_banner_mKnN93": {
+      "type": "reusable-hero-banner",
+      "blocks": {
+        "heading_4dgnNF": {
+          "type": "heading",
+          "settings": {
+            "heading_text": "<p>FALL/WINTER 2021</p>"
+          }
+        },
+        "text_xmQmqq": {
+          "type": "text",
+          "settings": {
+            "body_text": "<p>Our new collection is an ode to purity, fluidity and nature. We are inspired by the mountains, by the warmth of the<br/>earth and soft lines drawn by the wind in the sky.</p>"
+          }
+        },
+        "button_xHLhKw": {
+          "type": "button",
+          "settings": {
+            "cta_label": "SHOP MEN",
+            "cta_link": "shopify://collections"
+          }
+        },
+        "button_pYUHdg": {
+          "type": "button",
+          "settings": {
+            "cta_label": "SHOP WOMEN",
+            "cta_link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "heading_4dgnNF",
+        "text_xmQmqq",
+        "button_xHLhKw",
+        "button_pYUHdg"
+      ],
+      "name": "Reusable Hero Banner",
+      "settings": {
+        "display_media": "image",
+        "cover_image": "shopify://shop_images/theme_cover_image.jpg",
+        "video_description": "",
+        "enable_overlay": true,
+        "overlay_strength": 30,
+        "text_position": "center",
+        "enable_box": true,
+        "box_theme": "dark",
+        "box_strength": 80,
+        "copy_color": "#FFFFFF",
+        "enable_shadow": false,
+        "button_text": "#FFFFFF",
+        "button_border": "#FFFFFF"
+      }
     }
   },
   "order": [
     "6a3bb789-ce10-45f5-ae67-e2063ef8c76b",
     "featured_collection",
     "f1552b18-6017-4231-810d-74e61da22c37",
-    "38cdf60f-e431-43b5-aac3-7e6215447d67"
+    "38cdf60f-e431-43b5-aac3-7e6215447d67",
+    "reusable_hero_banner_mKnN93"
   ]
 }

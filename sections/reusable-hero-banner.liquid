@@ -1,0 +1,376 @@
+{%- liquid
+  assign media_available = false
+  if section.settings.display_media == 'image' and section.settings.cover_image != blank
+    assign media_available = true
+  elsif section.settings.display_media == 'video' and section.settings.background_video != blank
+    assign media_available = true
+  endif
+-%}
+
+{%- if media_available -%}
+{{ 'reusable-hero-banner.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  {%- if section.settings.enable_overlay -%}
+    #ReusableHeroBanner-{{ section.id }}::after {
+      opacity: {{ section.settings.overlay_strength | divided_by: 100.0 }};
+    }
+  {%- endif -%}
+
+  #ReusableHeroBanner-{{ section.id }} .reusable-hero-banner-panel {
+    {%- if section.settings.enable_box -%}
+      {%- if section.settings.box_theme == 'dark' -%}
+        background-color: rgba(12,12,12,{{ section.settings.box_strength | divided_by: 100.0 }});
+      {%- else -%}
+        background-color: rgba(255,255,255,{{ section.settings.box_strength | divided_by: 100.0 }});
+      {%- endif -%}
+    {%- else -%}
+      background: transparent;
+    {%- endif -%}
+  }
+
+  #ReusableHeroBanner-{{ section.id }} .reusable-hero-banner-title,
+  #ReusableHeroBanner-{{ section.id }} .reusable-hero-banner-description {
+    color: {{ section.settings.copy_color }};
+    {%- if section.settings.enable_shadow -%}
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    {%- endif -%}
+  }
+
+  #ReusableHeroBanner-{{ section.id }} .reusable-hero-banner-button {
+    color: {{ section.settings.button_text }};
+    border-color: {{ section.settings.button_border }};
+  }
+
+  #ReusableHeroBanner-{{ section.id }} .reusable-hero-banner-button:hover {
+    {%- if section.settings.button_border == '#0C0C0C' -%}
+      background: rgba(12,12,12,0.1);
+    {%- else -%}
+      background: rgba(255,255,255,0.1);
+    {%- endif -%}
+  }
+{%- endstyle -%}
+
+<div
+  id="ReusableHeroBanner-{{ section.id }}"
+  class="reusable-hero-banner reusable-hero-banner--{{ section.settings.text_position }}{% if section.settings.enable_overlay %} reusable-hero-banner--dim{% endif %}"
+>
+
+  <div class="reusable-hero-banner-media">
+    {%- if section.settings.display_media == 'video' and section.settings.background_video != blank -%}
+
+      {%- liquid
+        assign vid = section.settings.background_video.id
+        assign vid_type = section.settings.background_video.type
+      -%}
+
+      <div class="reusable-hero-banner-video-wrap">
+
+        {%- if vid_type == 'youtube' -%}
+        <iframe
+          class="reusable-hero-banner-video"
+          src="https://www.youtube-nocookie.com/embed/{{ vid }}?autoplay=1&mute=1&loop=1&playlist={{ vid }}&controls=0&showinfo=0&rel=0&playsinline=1"
+          title="{{ section.settings.video_description | escape }}"
+          frameborder="0"
+          allow="autoplay; encrypted-media; picture-in-picture"
+        ></iframe>
+        {%- elsif vid_type == 'vimeo' -%}
+        <iframe
+          class="reusable-hero-banner-video"
+          src="https://player.vimeo.com/video/{{ vid }}?autoplay=1&muted=1&loop=1&background=1"
+          title="{{ section.settings.video_description | escape }}"
+          frameborder="0"
+          allow="autoplay; fullscreen"
+        ></iframe>
+        {%- endif -%}
+
+      </div>
+
+    {%- elsif section.settings.cover_image != blank -%}
+
+      {%- liquid
+        assign img_height = section.settings.cover_image.width | divided_by: section.settings.cover_image.aspect_ratio
+      -%}
+
+      {{
+        section.settings.cover_image
+        | image_url: width: 3840
+        | image_tag:
+          loading: 'lazy',
+          width: section.settings.cover_image.width,
+          height: img_height,
+          class: 'reusable-hero-banner-image',
+          sizes: '100vw',
+          widths: '375,550,750,1100,1500,1780,2000,3000,3840'
+      }}
+
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+  <div class="reusable-hero-banner-content">
+    <div class="reusable-hero-banner-panel">
+
+      {%- for block in section.blocks -%}
+
+        {%- case block.type -%}
+
+          {%- when 'heading' -%}
+            {%- if block.settings.heading_text != blank -%}
+              <div class="reusable-hero-banner-title" {{ block.shopify_attributes }}>
+                {{ block.settings.heading_text }}
+              </div>
+            {%- endif -%}
+
+          {%- when 'text' -%}
+            {%- if block.settings.body_text != blank -%}
+              <div class="reusable-hero-banner-description" {{ block.shopify_attributes }}>
+                {{ block.settings.body_text }}
+              </div>
+            {%- endif -%}
+
+          {%- when 'button' -%}
+            {%- if block.settings.cta_label != blank and block.settings.cta_link != blank -%}
+              <a
+                href="{{ block.settings.cta_link }}"
+                class="reusable-hero-banner-button"
+                {{ block.shopify_attributes }}
+              >
+                {{ block.settings.cta_label | escape }}
+              </a>
+            {%- endif -%}
+
+        {%- endcase -%}
+
+      {%- endfor -%}
+
+    </div>
+  </div>
+  {%- endif -%}
+
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Reusable Hero Banner",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+
+    {
+      "type": "select",
+      "id": "display_media",
+      "label": "Background Media",
+      "options": [
+        { "value": "image", "label": "Image Background" },
+        { "value": "video", "label": "Video Background" }
+      ],
+      "default": "image"
+    },
+
+    {
+      "type": "header",
+      "content": "Image Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "cover_image",
+      "label": "Background Image"
+    },
+
+    {
+      "type": "header",
+      "content": "Video Background"
+    },
+    {
+      "type": "video_url",
+      "id": "background_video",
+      "accept": ["youtube","vimeo"],
+      "label": "Video Link"
+    },
+    {
+      "type": "text",
+      "id": "video_description",
+      "label": "Video Accessibility Text"
+    },
+
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Enable Overlay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overlay_strength",
+      "label": "Overlay Strength",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+
+    {
+      "type": "header",
+      "content": "Content Position"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left Align" },
+        { "value": "center", "label": "Center Align" },
+        { "value": "right", "label": "Right Align" }
+      ],
+      "default": "center"
+    },
+
+    {
+      "type": "header",
+      "content": "Content Box"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_box",
+      "label": "Enable Content Box",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "box_theme",
+      "label": "Box Style",
+      "options": [
+        { "value": "dark", "label": "Dark" },
+        { "value": "light", "label": "Light" }
+      ],
+      "default": "dark"
+    },
+    {
+      "type": "range",
+      "id": "box_strength",
+      "label": "Box Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 80
+    },
+
+    {
+      "type": "header",
+      "content": "Text Style"
+    },
+    {
+      "type": "select",
+      "id": "copy_color",
+      "label": "Text Color",
+      "options": [
+        { "value": "#0C0C0C", "label": "Black" },
+        { "value": "#FFFFFF", "label": "White" }
+      ],
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_shadow",
+      "label": "Enable Text Shadow",
+      "default": false
+    },
+
+    {
+      "type": "header",
+      "content": "Button Style"
+    },
+    {
+      "type": "select",
+      "id": "button_text",
+      "label": "Button Text Color",
+      "options": [
+        { "value": "#0C0C0C", "label": "Black" },
+        { "value": "#FFFFFF", "label": "White" }
+      ],
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "select",
+      "id": "button_border",
+      "label": "Button Border Color",
+      "options": [
+        { "value": "#0C0C0C", "label": "Black" },
+        { "value": "#FFFFFF", "label": "White" }
+      ],
+      "default": "#FFFFFF"
+    }
+
+  ],
+
+  "blocks": [
+
+    {
+      "type": "heading",
+      "name": "Title",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "heading_text",
+          "label": "Heading Text",
+          "default": "<p><em>NEW COLLECTION</em></p>"
+        }
+      ]
+    },
+
+    {
+      "type": "text",
+      "name": "Description",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "body_text",
+          "label": "Description Text",
+          "default": "<p>Discover our newest designs inspired by nature and simplicity.</p>"
+        }
+      ]
+    },
+
+    {
+      "type": "button",
+      "name": "Call To Action",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "Button Text",
+          "default": "EXPLORE"
+        },
+        {
+          "type": "url",
+          "id": "cta_link",
+          "label": "Button Link"
+        }
+      ]
+    }
+
+  ],
+
+  "presets": [
+    {
+      "name": "Reusable Hero Banner",
+      "blocks": [
+        { "type": "heading" },
+        { "type": "text" },
+        { "type": "button" }
+      ]
+    }
+  ]
+}
+{% endschema %}
