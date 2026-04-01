@@ -168,6 +168,34 @@
                   {{ product.description }}
                 </div>
               {%- endif -%}
+              {%- assign care_guide = product.metafields.custom.care_guide.value -%}
+              {%- if care_guide != blank -%}
+                <section class="care-guide">
+                  {%- if care_guide.icon != blank -%}
+                    <div class="care-guide__icon">
+                      <img
+                        src="{{ care_guide.icon | image_url: width: 64 }}"
+                        alt="{{ care_guide.title | escape }}"
+                        width="64"
+                        height="64"
+                        loading="lazy"
+                      >
+                    </div>
+                  {%- endif -%}
+
+                  <div class="care-guide__content">
+                    {%- if care_guide.title != blank -%}
+                      <h4 class="care-guide__title">{{ care_guide.title }}</h4>
+                    {%- endif -%}
+
+                    {%- if care_guide.description != blank -%}
+                      <div class="care-guide__description">
+                        <p>{{ care_guide.description }}</p>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                </section>
+              {%- endif -%}
             {%- when 'sku' -%}
               <p
                 class="product__sku no-js-hidden{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
